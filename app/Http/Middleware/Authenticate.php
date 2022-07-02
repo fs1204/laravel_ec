@@ -3,10 +3,16 @@
 namespace App\Http\Middleware;
 
 use Illuminate\Auth\Middleware\Authenticate as Middleware;
+use Illuminate\Support\Facades\Route;
 
 class Authenticate extends Middleware
 {
-    /**
+    protected $user_route = 'user.login';
+    protected $owner_route = 'owner.login';
+    protected $admin_route = 'admin.login';
+    // RouteServiceProviderのasでつけた名前
+
+    /**         もし認証されていない場合にリダイレクト
      * Get the path the user should be redirected to when they are not authenticated.
      *
      * @param  \Illuminate\Http\Request  $request
@@ -14,8 +20,15 @@ class Authenticate extends Middleware
      */
     protected function redirectTo($request)
     {
-        if (! $request->expectsJson()) {
-            return route('login');
+        if (! $request->expectsJson()) {    //JSONでなければ、、、
+            if (Route::is('owner.*')) {
+                return route($this->owner_route);
+                     // owner関連のurlでログインしていなければ、オーナーのログイン画面に飛ぶ
+            } elseif (Route::is('admin.*')) {
+                return route($this->admin_route);
+            } else {
+                return route($this->user_route);
+            }
         }
     }
 }
