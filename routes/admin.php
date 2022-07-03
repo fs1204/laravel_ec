@@ -11,6 +11,7 @@ use App\Http\Controllers\Admin\Auth\NewPasswordController;
 use App\Http\Controllers\Admin\Auth\PasswordResetLinkController;
 use App\Http\Controllers\Admin\Auth\RegisteredUserController;
 use App\Http\Controllers\Admin\Auth\VerifyEmailController;
+use App\Http\Controllers\Admin\OwnersController;
 
 // ControllersはUser用となっているOwnerとAdminそれぞれ生成する必要がある
 
@@ -28,6 +29,8 @@ use App\Http\Controllers\Admin\Auth\VerifyEmailController;
 Route::get('/', function () {
     return view('admin.welcome');
 });
+
+Route::resource('owners', OwnersController::class)->middleware('auth:admin');
 
 Route::get('/dashboard', function () {
     return view('admin.dashboard');
