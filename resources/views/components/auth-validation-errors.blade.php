@@ -1,6 +1,7 @@
 @props(['errors'])
 
 @if ($errors->any())
+    {{-- エラーがあれば表示する --}}
     <div {{ $attributes }}>
         <div class="font-medium text-red-600">
             {{ __('Whoops! Something went wrong.') }}
