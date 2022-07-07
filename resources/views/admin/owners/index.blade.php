@@ -25,7 +25,7 @@
                                             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tl rounded-bl">名前</th>
                                             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">メールアドレス</th>
                                             <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100">作成日</th>
-                                            <th class="w-10 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
+                                            <th class="px-4 py-3 title-font tracking-wider font-medium text-gray-900 text-sm bg-gray-100 rounded-tr rounded-br"></th>
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -34,8 +34,14 @@
                                                 <td class="px-4 py-3">{{ $owner->name }}</td>
                                                 <td class="px-4 py-3">{{ $owner->email }}</td>
                                                 <td class="px-4 py-3">{{ $owner->created_at->diffForHumans() }}</td>
-                                                <td class="w-10 text-center">
-                                                <input name="plan" type="radio">
+                                                <td class="px-4 py-3">
+                                                    {{-- <input name="plan" type="radio"> --}}
+                                                    {{-- edit画面を表示するリンクを作る --}}
+                                                    {{-- create.blade.php の 「更新する」ボタンをコピー --}}
+                                                    {{-- 単純なボタンにしたい --}}
+                                                    <button onclick="location.href='{{ route('admin.owners.edit', ['owner' => $owner->id]) }}'" class="flex mx-auto text-white bg-indigo-400 border-0 py-2 px-4 focus:outline-none hover:bg-indigo-500 rounded">編集</button>
+
+                                                    {{-- 名前付きルートで設定したownerのidをまだ取得していない --}}
                                                 </td>
                                             </tr>
                                         @endforeach

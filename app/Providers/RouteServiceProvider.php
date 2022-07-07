@@ -55,7 +55,8 @@ class RouteServiceProvider extends ServiceProvider
 
             Route::prefix('admin')
                 ->as('admin.')   // asで別名をつける ルート情報をadmin.で書いていく形となる
-                ->middleware('web')
+                ->middleware('web') //??
+                // ->middleware('admin') //?? adminでは？？ adminだとエラーになる
                 ->group(base_path('routes/admin.php'));
                 // admin.phpのすべてのurlの頭にownerがつく
 
