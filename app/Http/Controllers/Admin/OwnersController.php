@@ -25,7 +25,8 @@ class OwnersController extends Controller
     public function index()
     {
         // $owners = Owner::all(); とすると、不要な情報も取得できてしまう
-        $owners = Owner::select('id', 'name', 'email', 'created_at')->get();
+        // $owners = Owner::select('id', 'name', 'email', 'created_at')->get();
+        $owners = Owner::select('id', 'name', 'email', 'created_at')->paginate(3);
         return view('admin.owners.index', compact('owners'));
     }
 

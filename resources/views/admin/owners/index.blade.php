@@ -17,7 +17,7 @@
                             <x-flash-message status="{{ session('status') }}" />
 
                             <div class="lg:w-2/3 w-full mx-auto overflow-auto">
-                            
+
                                 <table class="table-auto w-full text-left whitespace-no-wrap">
                                     <thead>
                                         <tr>
@@ -55,6 +55,8 @@
                                         @endforeach
                                     </tbody>
                                 </table>
+                                {{-- データは$ownersで渡ってくる --}}
+                                {{ $owners->links(); }}
                             </div>
                         </div>
                     </section>
