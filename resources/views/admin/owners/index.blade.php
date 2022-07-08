@@ -18,7 +18,9 @@
                             <x-flash-message status="{{ session('status') }}" />
 
                             <div class="lg:w-2/3 w-full mx-auto overflow-auto">
-
+                                <div class="flex justify-end mb-4">
+                                    <button onclick="location.href='{{ route('admin.owners.create') }}'" class="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">新規登録する</button>
+                                </div>
                                 <table class="table-auto w-full text-left whitespace-no-wrap">
                                     <thead>
                                         <tr>
@@ -50,7 +52,7 @@
                                                 <form id="delete_{{ $owner->id }}" method="post" action="{{ route('admin.owners.destroy', ['owner' => $owner->id]) }}">
                                                     @csrf
                                                     @method('delete')
-                                                    
+
                                                     {{-- md:を追加 --}}
                                                     <td class="md:px-4 py-3">
                                                         <a href="#" data-id="{{ $owner->id }}" onclick="deletePost(this)" class="flex mx-auto text-white bg-red-400 border-0 py-2 px-4 focus:outline-none hover:bg-red-500 rounded">削除</a>

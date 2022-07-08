@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;  // QueryBuilder
 use App\Models\Owner;               // Eloquent Model
+use App\Models\Shop;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\Rules\Password;
-
+use Throwable;
 
 class OwnersController extends Controller
 {
@@ -51,24 +53,41 @@ class OwnersController extends Controller
                         // formで入力した値が$requestで入ってくる形になる
     public function store(Request $request)
     {
-        $request->name; // input name="name" で入力された値
-
-        // Auth/RegisterUserController.php のstoreからコピペする
         $request->validate([
             'name' => ['required', 'string', 'max:255'],
             'email' => ['required', 'string', 'email', 'max:255', 'unique:owners'],
             'password' => ['required', 'confirmed', Password::defaults()],
         ]);
 
-        Owner::create([
-            'name' => $request->name,
-            'email' => $request->email,
-            'password' => Hash::make($request->password),
-        ]);
+        try {
+            DB::transaction(function () use($request) {
+                $owner = Owner::create([
+                    'name' => $request->name,
+                    'email' => $request->email,
+                    'password' => Hash::make($request->password),
+                ]);
+
+                Shop::create([
+                    'owner_id' => $owner->id, // 作成した$ownerのidを取得できる
+                    'name' => '店名を入力してください',
+                    'information' => '',
+                    'filename' => '',
+                    'is_selling' => true,
+                ]);
+            }, 2);  // 2回繰り返してくれる
+        } catch(Throwable $e) { // 何かしらのエラーがあると、$eに入ってくる
+        // } catch(\Throwable $e) { // ThrowableはPHP7の機能 useを使う場合と、 \を使う場合がある
+            Log::error($e);
+            throw $e;
+            // ログを書いて、画面上に出す
+        }
 
         return redirect()
                 ->route('admin.owners.index')
-                ->with('message', 'オーナー登録を実施しました。');
+                ->with([
+                    'message' => 'オーナー登録を実施しました。',
+                    'status' => 'info',
+                ]);
     }
 
     /**
