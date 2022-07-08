@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Validation\Rules\Password;
 
+
 class OwnersController extends Controller
 {
     public function __construct()
@@ -111,7 +112,10 @@ class OwnersController extends Controller
 
         return redirect()
                 ->route('admin.owners.index')
-                ->with('message', 'オーナー情報を更新');
+                ->with([
+                    'message' => 'オーナー情報を更新',
+                    'status' => 'info',
+                ]);
     }
 
     /**
@@ -122,6 +126,24 @@ class OwnersController extends Controller
      */
     public function destroy($id)
     {
-        //
+        Owner::findOrFail($id)->delete(); // ソフトデリート
+
+        return redirect()
+                ->route('admin.owners.index')
+                ->with([
+                    'message' => 'オーナー情報を削除しました。',
+                    'status' => 'alert',
+                ]);
+    }
+
+    public function expiredOwnerIndex() {
+        $expiredOwners = Owner::onlyTrashed()->get();   // 削除したモデルを取得
+        return view('admin.expired-owners', compact('expiredOwners'));
+    }
+
+    public function expiredOwnerDestroy($id) {
+        Owner::onlyTrashed()->findOrFail($id)->forceDelete();   // 削除したモデルを完全削除
+        return redirect()->route('admin.expired-owners.index');
     }
 }
+
