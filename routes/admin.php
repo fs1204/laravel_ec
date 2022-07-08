@@ -30,7 +30,7 @@ Route::get('/', function () {
     return view('admin.welcome');
 });
 
-Route::resource('owners', OwnersController::class)->middleware('auth:admin');
+Route::resource('owners', OwnersController::class)->middleware('auth:admin')->except(['show']);
 // admin/owners/... リソースコントローラのurlとなる
 
 Route::prefix('expired-owners')->middleware('auth:admin')->group(function () {
