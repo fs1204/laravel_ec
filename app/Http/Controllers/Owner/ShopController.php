@@ -6,6 +6,8 @@ use App\Http\Controllers\Controller;
 use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
+use InterventionImage;
 
 class ShopController extends Controller
 {
@@ -64,6 +66,7 @@ class ShopController extends Controller
 
     public function index()
     {
+        // phpinfo();
         // $ownerId = Auth::id();
         // $shops = Shop::where('owner_id', $ownerId)->get();
 
@@ -72,26 +75,46 @@ class ShopController extends Controller
         return view('owner.shops.index', compact('shops'));
     }
 
-    public function edit($id)
+    public function edit($id)   // ルートパラメータの値が引数に入ってくる。
     {
-        dd(Shop::findOrFail($id));
+        $shop = Shop::findOrFail($id);
+        return view('owner.shops.edit', compact('shop'));
     }
 
 
     // フォームに入力された値は$requestに入っている
     public function update(Request $request, $id)
     {
-        // $owner = Owner::findOrFail($id);
-        // $owner->name = $request->name;
-        // $owner->email = $request->email;
-        // $owner->password = Hash::make($request->password);
-        // $owner->save();
+        $imageFile = $request->file('image');
+        // $imageFile = $request->image;    //動的プロパティを使ってもいい
 
-        // return redirect()
-        //         ->route('admin.owners.index')
-        //         ->with([
-        //             'message' => 'オーナー情報を更新',
-        //             'status' => 'info',
-        //         ]);
+        if (!is_null($imageFile) && $imageFile->isValid()) {
+            // この条件がないと、nullのときも上書きしてしまうことになる
+
+            // Storage::putFile('public/shops', $imageFile); リサイズなしの場合
+                                //  storage/app/public/shops
+
+            // リサイズする場合
+            $resizedImage = InterventionImage::make($imageFile)->resize(1920, 1080)->encode();
+                // アップロードされた画像をInterventionImage::makeで入れて、その後にresizeでサイズを設定してからエンコードをかけている。
+            // dd($imageFile, $resizedImage);
+            // ^ Illuminate\Http\UploadedFile {#1336 ▼
+            //     -test: false
+            //     -originalName: "ダウンロード.png"
+            //     -mimeType: "image/png"
+            //      ....
+            //   }
+            // Intervention\Image\Image {#1332 ▼
+                //  ....
+            //     +encoded: b" Ï Ó\x00\x10JFIF\x00\x01\x01\x01\x00`\x00`\x00\x00 ■\x00;CREATOR: gd-jpeg v1.0 (using IJG JPEG v80), quality = 90\n                  █\x00C\x00\x03\x02\x02\x03\x02\x02\x03\x03\x .............
+            //   }
+            $fileName = uniqid(rand().'_'); // ランダムなファイル名を作成
+            $extension = $imageFile->extension();   // アップロードされたファイルの拡張子を取得する
+            $fileNameToStore = $fileName. '.' . $extension; // 作ったファイル名と拡張子をくっつけて、保存するためのファイル名
+            Storage::put('public/shops/' . $fileNameToStore, $resizedImage);
+
+        }
+
+        return redirect()->route('owner.shops.index');
     }
 }
