@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UploadImageRequest;
 use App\Models\Shop;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -83,7 +84,7 @@ class ShopController extends Controller
 
 
     // フォームに入力された値は$requestに入っている
-    public function update(Request $request, $id)
+    public function update(UploadImageRequest $request, $id)
     {
         $imageFile = $request->file('image');
         // $imageFile = $request->image;    //動的プロパティを使ってもいい
