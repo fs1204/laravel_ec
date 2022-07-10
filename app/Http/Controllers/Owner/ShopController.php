@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UploadImageRequest;
 use App\Models\Shop;
+use App\Service\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
@@ -83,39 +84,16 @@ class ShopController extends Controller
     }
 
 
-    // フォームに入力された値は$requestに入っている
     public function update(UploadImageRequest $request, $id)
     {
         $imageFile = $request->file('image');
-        // $imageFile = $request->image;    //動的プロパティを使ってもいい
 
         if (!is_null($imageFile) && $imageFile->isValid()) {
-            // この条件がないと、nullのときも上書きしてしまうことになる
 
-            // Storage::putFile('public/shops', $imageFile); リサイズなしの場合
-                                //  storage/app/public/shops
-
-            // リサイズする場合
-            $resizedImage = InterventionImage::make($imageFile)->resize(1920, 1080)->encode();
-                // アップロードされた画像をInterventionImage::makeで入れて、その後にresizeでサイズを設定してからエンコードをかけている。
-            // dd($imageFile, $resizedImage);
-            // ^ Illuminate\Http\UploadedFile {#1336 ▼
-            //     -test: false
-            //     -originalName: "ダウンロード.png"
-            //     -mimeType: "image/png"
-            //      ....
-            //   }
-            // Intervention\Image\Image {#1332 ▼
-                //  ....
-            //     +encoded: b" Ï Ó\x00\x10JFIF\x00\x01\x01\x01\x00`\x00`\x00\x00 ■\x00;CREATOR: gd-jpeg v1.0 (using IJG JPEG v80), quality = 90\n                  █\x00C\x00\x03\x02\x02\x03\x02\x02\x03\x03\x .............
-            //   }
-            $fileName = uniqid(rand().'_'); // ランダムなファイル名を作成
-            $extension = $imageFile->extension();   // アップロードされたファイルの拡張子を取得する
-            $fileNameToStore = $fileName. '.' . $extension; // 作ったファイル名と拡張子をくっつけて、保存するためのファイル名
-            Storage::put('public/shops/' . $fileNameToStore, $resizedImage);
-
+            $fileNameToStore = ImageService::upload($imageFile, 'shops');
         }
 
         return redirect()->route('owner.shops.index');
     }
+
 }
