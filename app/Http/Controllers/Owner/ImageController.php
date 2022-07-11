@@ -89,25 +89,16 @@ class ImageController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function show($id)
-    {
-        //
-    }
-
-    /**
      * Show the form for editing the specified resource.
      *
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    // ShopContoroller の edit を参考に貼り付ける。
     public function edit($id)
     {
-        //
+        $image = Image::findOrFail($id);
+        return view('owner.images.edit', compact('image'));
     }
 
     /**
@@ -117,9 +108,23 @@ class ImageController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+    // ShopContoroller の update を参考に貼り付ける。
     public function update(Request $request, $id)
     {
-        //
+        $request->validate([
+            'title' => ['string', 'max:255'],
+            // nullableなので、requiredは不要。
+        ]);
+
+        $image = Image::findOrFail($id);    // 入ってきたidを元にEloquentで情報を取得する。
+        $image->title = $request->title;
+
+        $image->save();  // 保存する
+
+        return redirect()->route('owner.images.index')->with([
+            'message' => '画像情報を更新しました。',
+            'status' => 'info',
+        ]);
     }
 
     /**

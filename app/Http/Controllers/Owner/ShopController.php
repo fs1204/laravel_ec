@@ -79,6 +79,5 @@ class ShopController extends Controller
             'status' => 'info',
         ]);
         // OwnersControllerのupdateから持ってくる
-
     }
 }

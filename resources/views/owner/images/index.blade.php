@@ -26,15 +26,20 @@
                     <div class="flex flex-wrap">
                         {{-- 横並びにする wrapとすると、はみ出した分を改行する --}}
                         @foreach ($images as $image)
-                            <div class="w-1/4 p-4 flex">
+                            <div class="w-1/4 p-2 md:p-4 flex">
+                                {{-- ブラウザ対応の時に画像が小さ過ぎて、paddingをかけ過ぎている。ただ、paddingがないと、ぴったりくっついてしまう。 --}}
                                 <a href="{{ route('owner.images.edit', ['image' => $image->id]) }}">
-                                    <div class="border rounded-md p-4">
+                                    <div class="border rounded-md p-2 md:p-4">
                                         {{-- このコードを他でも使うので、コンポネント化する。 --}}
-                                        <div class="text-xl">{{ $image->title }}</div>
+
                                         {{-- <x-shop-thumbnail :filename="$shop->filename" /> 今回フォルダを変えるために名前を変更する --}}
                                             {{-- shop-thumbnail を thumbnail と変更する --}}
                                         <x-thumbnail :filename="$image->filename" type="products"/>
                                             {{-- Undefined variable $shop $shop->filenameではなく$image->filename --}}
+
+
+                                        <div class="text-gray-700">{{ $image->title }}</div>
+                                        {{-- タイトルはサムネイルの下に貼り付ける --}}
                                     </div>
                                 </a>
                             </div>
