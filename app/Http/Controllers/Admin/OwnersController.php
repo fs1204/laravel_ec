@@ -124,8 +124,8 @@ class OwnersController extends Controller
                         // フォームに入力された値は$requestに入っている
     public function update(Request $request, $id)
     {
-        $owner = Owner::findOrFail($id);
-        $owner->name = $request->name;
+        $owner = Owner::findOrFail($id);    // 入ってきたidを元にEloquentで情報を取得する。
+        $owner->name = $request->name;  // フォームから入ってくる値をモデルに代入する。
         $owner->email = $request->email;
         $owner->password = Hash::make($request->password);
         $owner->save();

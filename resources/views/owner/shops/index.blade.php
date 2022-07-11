@@ -12,6 +12,11 @@
             <div class="bg-white overflow-hidden shadow-sm sm:rounded-lg">
                 <div class="p-6 bg-white border-b border-gray-200">
                     {{-- ログインに成功したら、$shopsという変数が渡ってくるので、foreach で書くことにする --}}
+                    <x-flash-message status="{{ session('status') }}" />
+                    {{-- // フラッシュメッセージを表示するタグを追加する必要がある
+                    // resources/views/admin/owners/index.blade.php から 以下をコピー
+                    // <x-flash-message status="{{ session('status') }}" /> --}}
+
                     @foreach ($shops as $shop)
                         <div class="w-1/2 p-4">
                             <a href="{{ route('owner.shops.edit', ['shop' => $shop->id]) }}">
@@ -23,16 +28,10 @@
                                             <span class="border p-2 rounded-md bg-red-400 text-white">停止中</span>
                                         @endif
                                     </div>
+
+                                    {{-- このコードを他でも使うので、コンポネント化する。 --}}
                                     <div class="text-xl">{{ $shop->name }}</div>
-                                    <div>
-                                        @if(empty($shop->filename))
-                                            <img src="{{ asset('images/no_image.jpg') }}">
-                                        @else
-                                        {{-- アップロードした画像はstorageフォルダに入っていく --}}
-                                            <img src="{{ asset('storage/shops/' . $shop->filename) }}">
-                                            // shopsというフォルダを作ってその中に保存していく
-                                        @endif
-                                    </div>
+                                    <x-shop-thumbnail :filename="$shop->filename" />
                                 </div>
                             </a>
                         </div>
