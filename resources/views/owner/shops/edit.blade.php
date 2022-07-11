@@ -41,7 +41,7 @@
                             <div class="p-2 w-1/2 mx-auto">
                                 <div class="relative">
                                     <div class="w-32">
-                                        <x-shop-thumbnail :filename="$shop->filename"/>
+                                        <x-thumbnail :filename="$shop->filename" type="shops" />
                                     </div>
                                 </div>
                             </div>
@@ -68,6 +68,7 @@
                                 <button type="button" onclick="location.href='{{ route('owner.shops.index') }}'" class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">戻る</button>
                                 <button type="submit" class="flex mx-auto text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">更新する</button>
                             </div>
+                            
                         </div>
                     </form>
                 </div>

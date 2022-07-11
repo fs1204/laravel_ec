@@ -20,33 +20,6 @@ class ShopController extends Controller
         $this->middleware('auth:owners');
 
         $this->middleware(function ($request, $next) {
-            // http://localhost/owner/shops/edit/2
-            // dd($request);
-            // ^ Illuminate\Http\Request {#42 ▼
-            //      .....
-            //   }
-
-            // dd($request->route());
-            // http://localhost/owner/shops/edit/2 でアクセス
-            // ^ Illuminate\Routing\Route {#283 ▼
-            //      ...
-            //     +parameters: array:1 [▼
-            //             "shop" => "2"
-            //         ]
-            //              Route::get('edit/{shop}', [ShopController::class, 'edit'])->name('shops.edit');
-            //              {shop} が parameters の key に当たる。 2
-            //      ...
-            //   }
-
-            // dd($request->route()->parameter('shop'));   // "2"  // 文字列で返ってくる
-            // dd(Auth::id()); // 1 数値で帰ってくる    ownerのid
-
-            // http://localhost/owner/shops/index とすると、、、
-            // dd($request->route()->parameter('shop')); は null となる
-
-            // まず null かどうか判定して、 null でなければ、
-            // urlに書いてある数字を確認して、ログインしているownerが作ったものかどうかチェックする
-            // 違ったら、エラーページを出す
 
             $id = $request->route()->parameter('shop'); // shop の id取得
             if (!is_null($id)) {    // null判定
@@ -59,10 +32,6 @@ class ShopController extends Controller
             }
 
             return $next($request);
-
-            // http://localhost/owner/shops/edit/2
-            // 404 NOT FOUND
-            // 複数のownerが商品や店舗の情報を持っているときは、urlを直接変更する可能性がある
         });
     }
 

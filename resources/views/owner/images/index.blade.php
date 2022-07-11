@@ -1,4 +1,4 @@
-{{-- dashboardの内容をコピーする --}}
+{{-- shops/index.blade.php をコピーして貼り付ける --}}
 
 <x-app-layout>
     <x-slot name="header">
@@ -17,28 +17,31 @@
                     // resources/views/admin/owners/index.blade.php から 以下をコピー
                     // <x-flash-message status="{{ session('status') }}" /> --}}
 
-                    @foreach ($shops as $shop)
-                        <div class="w-1/2 p-4">
-                            <a href="{{ route('owner.shops.edit', ['shop' => $shop->id]) }}">
-                                <div class="borde rounded-md p-4">
-                                    <div class="mb-4">
-                                        @if($shop->is_selling)
-                                            <span class="border p-2 rounded-md bg-blue-400 text-white">販売中</span>
-                                        @else
-                                            <span class="border p-2 rounded-md bg-red-400 text-white">停止中</span>
-                                        @endif
-                                    </div>
 
+                    {{-- 新規作成のボタンがない。admin/owners/index.blade.php の中からコピーする。 --}}
+                    <div class="flex justify-end mb-4">
+                        <button onclick="location.href='{{ route('owner.images.create') }}'" class="text-white bg-indigo-500 border-0 py-2 px-8 focus:outline-none hover:bg-indigo-600 rounded text-lg">新規登録する</button>
+                    </div>
+
+                    @foreach ($images as $image)
+                        <div class="w-1/4 p-4">
+                            <a href="{{ route('owner.images.edit', ['image' => $image->id]) }}">
+                                <div class="borde rounded-md p-4">
                                     {{-- このコードを他でも使うので、コンポネント化する。 --}}
-                                    <div class="text-xl">{{ $shop->name }}</div>
-                                    {{-- <x-shop-thumbnail :filename="$shop->filename" /> コンポーネントの名前を変えたので、こちらも変える必要がある。--}}
-                                    <x-thumbnail :filename="$shop->filename" type="shops" />
+                                    <div class="text-xl">{{ $image->title }}</div>
+                                    {{-- <x-shop-thumbnail :filename="$shop->filename" /> 今回フォルダを変えるために名前を変更する --}}
+                                        {{-- shop-thumbnail を thumbnail と変更する --}}
+                                    <x-thumbnail :filename="$shop->filename" type="products"/>
                                 </div>
                             </a>
                         </div>
                     @endforeach
+
+                    {{ $images->links(); }}
+
                 </div>
             </div>
         </div>
     </div>
 </x-app-layout>
+

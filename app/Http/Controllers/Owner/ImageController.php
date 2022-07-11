@@ -3,10 +3,33 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Models\Image;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class ImageController extends Controller
 {
+    // ShopController.php の __construct() をコピー
+    public function __construct()
+    {
+        $this->middleware('auth:owners');
+
+        $this->middleware(function ($request, $next) {
+
+            $id = $request->route()->parameter('image');
+            if (!is_null($id)) {
+                $imagesOwnerId = Image::findOrFail($id)->owner->id;  // owner_id を取得
+                $imageId = (int)$imagesOwnerId;
+                if ($imageId !== Auth::id()) {
+                    abort(404);
+                }
+            }
+
+            return $next($request);
+        });
+    }
+
+    // ShopController.php の index() をコピー
     /**
      * Display a listing of the resource.
      *
@@ -14,7 +37,14 @@ class ImageController extends Controller
      */
     public function index()
     {
-        //
+        // phpinfo();
+        // $ownerId = Auth::id();
+        // $shops = Shop::where('owner_id', $ownerId)->get();
+
+        $images = Image::where('owner_id', Auth::id())->orderBy('updated_at', 'desc')->paginate(20);
+
+        return view('owner.images.index', compact('images'));
+        // 1つのownerに対して、1つのshopなので、shopとしたほうがよいのでは？？？
     }
 
     /**
