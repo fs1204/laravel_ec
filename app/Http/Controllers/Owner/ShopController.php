@@ -20,7 +20,6 @@ class ShopController extends Controller
         $this->middleware('auth:owners');
 
         $this->middleware(function ($request, $next) {
-
             $id = $request->route()->parameter('shop'); // shop の id取得
             if (!is_null($id)) {    // null判定
                 $shopsOwnerId = Shop::findOrFail($id)->owner->id;  // owner_id を取得
@@ -30,19 +29,13 @@ class ShopController extends Controller
                     abort(404);
                 }
             }
-
             return $next($request);
         });
     }
 
     public function index()
     {
-        // phpinfo();
-        // $ownerId = Auth::id();
-        // $shops = Shop::where('owner_id', $ownerId)->get();
-
         $shops = Shop::where('owner_id', Auth::id())->get();
-
         return view('owner.shops.index', compact('shops'));
         // 1つのownerに対して、1つのshopなので、shopとしたほうがよいのでは？？？
     }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UploadImageRequest;
 use App\Models\Image;
+use App\Service\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -66,7 +67,25 @@ class ImageController extends Controller
      */
     public function store(UploadImageRequest $request)
     {
-        dd($request);
+        $imageFiles = $request->file('files');
+
+        if(!is_null($imageFiles)){
+            foreach($imageFiles as $imageFile){
+                                                                    // 第2引数はフォルダ名
+                $fileNameToStore = ImageService::upload($imageFile, 'products');
+                Image::create([
+                    'owner_id' => Auth::id(),
+                    'filename' => $fileNameToStore
+                ]);
+            }
+        }
+
+        // ShopController.php の create から抜粋
+        return redirect()->route('owner.shops.index')
+                ->with([
+                    'message' => '店舗情報を更新',
+                    'status' => 'info',
+                ]);
     }
 
     /**
