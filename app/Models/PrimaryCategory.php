@@ -9,6 +9,11 @@ class PrimaryCategory extends Model
 {
     use HasFactory;
 
+    // protected $fillable = [
+    //     'name',
+    //     'sort_order',
+    // ];
+
     public function secondary() {
         return $this->hasMany(SecondaryCategory::class);
     }
