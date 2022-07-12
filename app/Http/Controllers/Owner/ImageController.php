@@ -8,6 +8,7 @@ use App\Models\Image;
 use App\Service\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Storage;
 
 class ImageController extends Controller
 {
@@ -127,14 +128,25 @@ class ImageController extends Controller
         ]);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
+    // Admin/OwnersController.php を参照
     public function destroy($id)
     {
-        //
+        $image = Image::findOrFail($id);
+        $filePath = 'public/products/' . $image->filename;
+        if (Storage::exists($filePath)) {   // ファイルがない可能性もあるので、念の為if文。
+            // storage/app/public/products/... に あるかどう
+            Storage::delete($filePath);
+        }
+
+        // この削除処理の前にStorageの画像を削除する必要がある。
+        Image::findOrFail($id)->delete();
+        // ソフトデリートではなく、直接消す。
+
+        return redirect()
+                ->route('owner.images.index')
+                ->with([
+                    'message' => '画像を削除しました。',
+                    'status' => 'alert',
+                ]);
     }
 }
