@@ -11,5 +11,4 @@ class Stock extends Model
 
     protected $table = 't_stocks';  // モデルと対応するテーブルを指定
 
-
 }
