@@ -27,8 +27,8 @@ class DatabaseSeeder extends Seeder
             ShopSeeder::class,
             ImageSeeder::class,
             CategorySeeder::class,
-            ProductSeeder::class,
-            StockSeeder::class,
+            // ProductSeeder::class,
+            // StockSeeder::class,
         ]);
     }
 }
