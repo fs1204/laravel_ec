@@ -142,7 +142,18 @@ class ProductController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        dd($request);
+        // ^ Illuminate\Http\Request {#42 ▼
+        //     ...
+        //     +request: Symfony\Component\HttpFoundation\InputBag {#43 ▼
+        //       #parameters: array:3 [▼
+        //         "_token" => "jvQSbw0GlOCAuVQqQP4SFmS8uohLZKV1XRiMLJ69"
+        //         "category" => "1"
+        //         "image1" => "4"
+        //       ]
+        //     }
+        //     ....
+        //   }
     }
 
     /**
