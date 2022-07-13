@@ -26,10 +26,11 @@ $images の箇所を $products に変更 --}}
                                     <a href="{{ route('owner.products.edit', ['product' => $product->id]) }}">
                                         <div class="border rounded-md p-2 md:p-4">
 
-                                            <x-thumbnail :filename="$product->imageFirst->filename" type="products"/>
+                                            <x-thumbnail filename="{{ $product->imageFirst->filename ?? '' }}" type="products"/>
+                                                {{-- image1を設定していない場合は、nullが入ってくるので、nullかどうかの判定をかける。 --}}
 
                                             <div class="text-gray-700">{{ $product->name }}</div>
-                                                                    
+
                                         </div>
                                     </a>
                                 </div>

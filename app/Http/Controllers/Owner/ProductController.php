@@ -8,8 +8,12 @@ use App\Models\Owner;
 use App\Models\PrimaryCategory;
 use App\Models\Product;
 use App\Models\Shop;
+use App\Models\Stock;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Throwable;
 
 class ProductController extends Controller
 {
@@ -140,20 +144,61 @@ class ProductController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
+    // OwnerController.php を参考にする
     public function store(Request $request)
     {
-        dd($request);
-        // ^ Illuminate\Http\Request {#42 ▼
-        //     ...
-        //     +request: Symfony\Component\HttpFoundation\InputBag {#43 ▼
-        //       #parameters: array:3 [▼
-        //         "_token" => "jvQSbw0GlOCAuVQqQP4SFmS8uohLZKV1XRiMLJ69"
-        //         "category" => "1"
-        //         "image1" => "4"
-        //       ]
-        //     }
-        //     ....
-        //   }
+        // create.blade.phpを下に配置して中身を見ながらバリデーションをかける。
+        $request->validate([
+            'name' => ['required', 'string', 'max:50'],
+            'information' => ['required', 'string', 'max:1000'],
+            'price' => ['required', 'integer'],
+            'sort_order' => ['nullable', 'integer'],
+            'quantity' => ['required', 'integer'],
+            'shop_id' => ['required', 'exists:shops,id'], // shopsのidに存在するかどうか
+            'category' => ['required', 'exists:secondary_categories,id'],
+            'image1' => ['nullable', 'exists:images,id'],
+            'image2' => ['nullable', 'exists:images,id'],
+            'image3' => ['nullable', 'exists:images,id'],
+            'image4' => ['nullable', 'exists:images,id'],
+            'is_selling' => ['required'],
+        ]);
+
+        try {
+             // create.blade.phpを下に配置して中身を見ながらバリデーションをかける。
+            DB::transaction(function () use($request) {
+                $product = Product::create([
+                    'name' => $request->name,
+                    'information' => $request->information,
+                    'price' => $request->price,
+                    'sort_order' => $request->sort_order,
+                    'shop_id' => $request->shop_id,
+                    'secondary_category_id' => $request->category,
+                    'image1' => $request->image1,
+                    'image2' => $request->image2,
+                    'image3' => $request->image3,
+                    'image4' => $request->image4,
+                    'is_selling' => $request->is_selling,
+                ]);
+
+                Stock::create([
+                    'product_id' => $product->id, // 作成した$productのidを取得できる
+                    'type' => 1,
+                    'quantity' => $request->quantity,
+                ]);
+            }, 2);  // 2回繰り返してくれる
+        } catch(Throwable $e) { // 何かしらのエラーがあると、$eに入ってくる
+        // } catch(\Throwable $e) { // ThrowableはPHP7の機能 useを使う場合と、 \を使う場合がある
+            Log::error($e);
+            throw $e;
+            // ログを書いて、画面上に出す
+        }
+
+        return redirect()
+                ->route('owner.products.index')
+                ->with([
+                    'message' => '商品登録しました。',
+                    'status' => 'info',
+                ]);
     }
 
     /**
