@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Owner;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UploadImageRequest;
 use App\Models\Image;
+use App\Models\Product;
 use App\Service\ImageService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -133,14 +134,45 @@ class ImageController extends Controller
     {
         $image = Image::findOrFail($id);
         $filePath = 'public/products/' . $image->filename;
-        if (Storage::exists($filePath)) {   // ファイルがない可能性もあるので、念の為if文。
-            // storage/app/public/products/... に あるかどう
+
+        // Storageの画像を消す前に判定をかけてもし使っていたらnullに変える
+        $imageInProducts = Product::where('image1', $image->id)
+        ->orWhere('image2', $image->id)
+        ->orWhere('image3', $image->id)
+        ->orWhere('image4', $image->id)
+        ->get();
+
+        if ($imageInProducts) { // $imageInProductsに値が入っていたらnullに変えたい。$imageInProductsはコレクション型
+            $imageInProducts->each(function($product) use($image) {
+                     // each コレクションの中の1つ1つの要素を処理できる
+                    //  $productに$imageInProductsの要素が入る
+                if ($product->image1 === $image->id) {
+                    $product->image1 = null;
+                    $product->save();
+                }
+                if ($product->image2 === $image->id) {
+                    $product->image2 = null;
+                    $product->save();
+                }
+                if ($product->image3 === $image->id) {
+                    $product->image3 = null;
+                    $product->save();
+                }
+                if ($product->image4 === $image->id) {
+                    $product->image4 = null;
+                    $product->save();
+                }
+            });
+        }
+
+
+        if (Storage::exists($filePath)) {
             Storage::delete($filePath);
         }
 
-        // この削除処理の前にStorageの画像を削除する必要がある。
-        Image::findOrFail($id)->delete();
-        // ソフトデリートではなく、直接消す。
+        Image::findOrFail($id)->delete();   // 先程のエラー「 a foreign key constraint fails」はここ
+        // 実は手前のStorage::delete($filePath);で画像自体は削除されている
+        // imagesテーブルからレコードは削除できない
 
         return redirect()
                 ->route('owner.images.index')
