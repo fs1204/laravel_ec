@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Owner;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\ProductRequest;
 use App\Models\Image;
 use App\Models\Owner;
 use App\Models\PrimaryCategory;
@@ -145,24 +146,8 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
     // OwnerController.php を参考にする
-    public function store(Request $request)
+    public function store(ProductRequest $request)
     {
-        // create.blade.phpを下に配置して中身を見ながらバリデーションをかける。
-        $request->validate([
-            'name' => ['required', 'string', 'max:50'],
-            'information' => ['required', 'string', 'max:1000'],
-            'price' => ['required', 'integer'],
-            'sort_order' => ['nullable', 'integer'],
-            'quantity' => ['required', 'integer'],
-            'shop_id' => ['required', 'exists:shops,id'], // shopsのidに存在するかどうか
-            'category' => ['required', 'exists:secondary_categories,id'],
-            'image1' => ['nullable', 'exists:images,id'],
-            'image2' => ['nullable', 'exists:images,id'],
-            'image3' => ['nullable', 'exists:images,id'],
-            'image4' => ['nullable', 'exists:images,id'],
-            'is_selling' => ['required'],
-        ]);
-
         try {
              // create.blade.phpを下に配置して中身を見ながらバリデーションをかける。
             DB::transaction(function () use($request) {
@@ -228,9 +213,73 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(ProductRequest $request, $id)
     {
-        //
+        //ShopController.phpのupdateを参照
+        $request->validate([
+            'current_quantity' => 'required|integer'
+            // editでは<input type="hidden" id="current_quantity" name="current_quantity" value="{{ $quantity }}" > がある
+            // 悪意のあるユーザーがGoogle Chromeの開発ツールを開いて直接valueを書き換えることもあり得る 念の為バリデーションをかけておく
+        ]);
+
+        // updateは$idで1つの商品を指定することができる
+        $product = Product::findOrFail($id);
+        $quantity = Stock::where('product_id', $product->id)->sum('quantity');  // ルートパラメータで指定した商品の在庫をquantityに入れることができる
+
+            // editに表示しているquantity   updateを読み込む際に取得したquantity
+        if ($request->current_quantity !== $quantity) {
+            $id = $request->route()->parameter('product');
+            return redirect()->route('owner.products.edit', ['product' => $id])
+                    ->with([    // 急にリダイレクトすると、訳がわからないので、フラッシュメッセージをつける
+                        'message' => '在庫数が変更されています。再度確認してください。',
+                        'status' => 'alert',
+                    ]); // フラッシュメッセージをedit側に追加する必要がある。
+        } else {
+            try {
+                // create.blade.phpを下に配置して中身を見ながらバリデーションをかける。
+               DB::transaction(function () use($request, $product) {
+                    // ルートパラメータで指定した$productを更新する。createだと新規作成してしまう。
+                    $product->name = $request->name;
+                    $product->information = $request->information;
+                    $product->price = $request->price;
+                    $product->sort_order = $request->sort_order;
+                    $product->shop_id = $request->shop_id;
+                    $product->secondary_category_id = $request->category;
+                    $product->image1 = $request->image1;
+                    $product->image2 = $request->image2;
+                    $product->image3 = $request->image3;
+                    $product->image4 = $request->image4;
+                    $product->is_selling = $request->is_selling;
+
+                    $product->save();   //createで保存しない場合は必要
+
+                    if ($request->type === '1') {
+                        $newQuantity = $request->quantity;
+                    }
+                    if ($request->type === '2') {
+                        $newQuantity = $request->quantity * -1;
+                    }
+
+                    Stock::create([ // Stockは毎回新規作成で作っていく
+                        'product_id' => $product->id,
+                        'quantity' => $newQuantity,
+                        'type' => $request->type,
+                    ]);
+               }, 2);  // 2回繰り返してくれる
+           } catch(Throwable $e) { // 何かしらのエラーがあると、$eに入ってくる
+           // } catch(\Throwable $e) { // ThrowableはPHP7の機能 useを使う場合と、 \を使う場合がある
+               Log::error($e);
+               throw $e;
+               // ログを書いて、画面上に出す
+           }
+
+           return redirect()
+                   ->route('owner.products.index')
+                   ->with([
+                       'message' => '商品情報を更新しました。',
+                       'status' => 'info',
+                   ]);
+        }
     }
 
     /**
