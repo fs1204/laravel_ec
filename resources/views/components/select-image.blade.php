@@ -4,6 +4,10 @@ if($name === 'image2'){ $modal = 'modal-2'; }
 if($name === 'image3'){ $modal = 'modal-3'; }
 if($name === 'image4'){ $modal = 'modal-4'; }
 if($name === 'image5'){ $modal = 'modal-5'; }   // 暫定対応
+
+$cImage = $currentImage ?? '' ;
+$cId = $currentId ?? '' ;
+
 @endphp
 
                                 {{-- ↓ (*) --}}
@@ -66,9 +70,8 @@ modalボランとして使うことができる--}}
     {{-- ボタンっぽくする --}}
     <a class="py-2 px-4 bg-gray-200" data-micromodal-trigger="{{ $modal }}" href='javascript:;'>ファイルを選択</a> {{-- ①より --}}
     <div class="w-1/4">
-        <img id="{{ $name }}_thumbnail" src="">
+        <img id="{{ $name }}_thumbnail" @if($cImage) src="{{ asset('storage/products/' . $cImage)}}" @else src="" @endif>
     </div>
 </div>
-<input id="{{ $name }}_hidden" type="hidden" name="{{ $name }}" value="">
-                    {{-- 画面には表示しないが値を持つことはできる --}}
 
+<input id="{{ $name }}_hidden" type="hidden" name="{{ $name }}" value="{{ $cId }}">
