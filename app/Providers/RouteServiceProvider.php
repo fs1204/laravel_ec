@@ -17,7 +17,9 @@ class RouteServiceProvider extends ServiceProvider
      *
      * @var string
      */
-    public const HOME = '/dashboard';   // userがログインしたら/dashboardを開く
+    // public const HOME = '/dashboard';
+    public const HOME = '/';
+                                        // userがログインしたら/dashboardを開く
                                         // userの場合はこれでOKだが、ownerとadminそれぞれで設定する
                                         // それぞれのリダイレクト先を作っておく必要がある
     public const OWNER_HOME = '/owner/dashboard'; // OWNERのログイン画面にログインしたら、/owner/dashboard にリダイレクトされる
