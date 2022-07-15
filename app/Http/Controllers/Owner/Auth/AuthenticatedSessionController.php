@@ -43,12 +43,13 @@ class AuthenticatedSessionController extends Controller
      */
     public function destroy(Request $request)
     {
-        Auth::guard('owners')->logout();
+        Auth::guard('owners')->logout();    // ownerをlogoutする
 
-        $request->session()->invalidate();
+        $request->session()->invalidate();  // セッションを無効化する
 
-        $request->session()->regenerateToken();
+        $request->session()->regenerateToken(); // トークンを再生成する
 
-        return redirect('/owner');
+        // return redirect('/owner');  //welocomepageになる welcomepageはコメントアウトしている
+        return redirect('/owner/login');
     }
 }
