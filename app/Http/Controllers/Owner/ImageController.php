@@ -142,6 +142,17 @@ class ImageController extends Controller
         ->orWhere('image4', $image->id)
         ->get();
 
+        // 対策①
+        // if ($imageInProducts) {
+        //     return redirect()
+        //     ->route('owner.images.index')
+        //     ->with([
+        //         'message' => '選択している画像を外してください。',
+        //         'status' => 'alert',
+        //     ]);
+        // }
+
+        // 対策②
         if ($imageInProducts) { // $imageInProductsに値が入っていたらnullに変えたい。$imageInProductsはコレクション型
             $imageInProducts->each(function($product) use($image) {
                      // each コレクションの中の1つ1つの要素を処理できる

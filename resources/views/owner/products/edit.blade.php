@@ -173,6 +173,14 @@
             });
         });
 
+        const ImageClear = document.querySelector('#image-clear');
+        ImageClear.addEventListener('click', function(){
+            // document.querySelector('.clear1').remove(); imgタグを消してしまうと、ファイル選択をクリアしたら、再度選択することはできなくなる
+            document.querySelector('.clear1').src = '';
+            document.querySelector('.clear2').value = '';
+            MicroModal.close(modal); //モーダルを閉じる
+        });
+
         function deletePost(e) {
             'use strict';
             if (confirm('削除してもいいですか？')) {
