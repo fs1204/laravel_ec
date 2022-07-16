@@ -1,11 +1,3 @@
-import './bootstrap';
-
-import Alpine from 'alpinejs';
-
-window.Alpine = Alpine;
-
-Alpine.start();
-
 // ドキュメントのget startedから
 // Install from NPM より
 // import Swiper JS

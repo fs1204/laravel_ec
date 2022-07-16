@@ -16,11 +16,75 @@
                         <div class="md:w-1/2">
                                 {{-- index.blade.phpからコピー  $productはクエリビルダではなくEloquentなので、リレーションメソッドを使える --}}
                                 {{-- EloquentはlaravelのORM（オブジェクト関係マッピング --}}
-                            <x-thumbnail filename="{{ $product->imageFirst->filename ?? '' }}" type="products"/>
+                            {{-- <x-thumbnail filename="{{ $product->imageFirst->filename ?? '' }}" type="products"/> --}}
+                            {{-- この部分をカルーセルにする --}}
+                                {{-- get started からhtmlコードをコピー --}}
+                            <!-- Slider main container -->
+                            <div class="swiper-container swiper">
+                                {{-- 古いバージョンなので、若干変える必要がある。 --}}
+                                <!-- Additional required wrapper -->
+                                <div class="swiper-wrapper">
+                                    <!-- Slides -->
+                                    <div class="swiper-slide">
+                                        {{-- <img src="{{ asset('storage/products/sample1.jpg') }}" alt=""> --}}
+                                        {{-- 画像は変数でコントローラから渡ってくる --}}
+                                        <div class="swiper-slide">
+                                            @if($product->imageFirst->filename !== null)
+                                                <img src="{{ asset('storage/products/' . $product->imageFirst->filename )}}">
+                                            @else
+                                                <img src="">
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="swiper-slide">
+                                        {{-- <img src="{{ asset('storage/products/sample1.jpg') }}" alt=""> --}}
+                                        {{-- 画像は変数でコントローラから渡ってくる --}}
+                                        <div class="swiper-slide">
+                                            @if($product->imageSecond->filename !== null)
+                                            <img src="{{ asset('storage/products/' . $product->imageSecond->filename )}}">
+                                            @else
+                                            <img src="">
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="swiper-slide">
+                                        {{-- <img src="{{ asset('storage/products/sample1.jpg') }}" alt=""> --}}
+                                        {{-- 画像は変数でコントローラから渡ってくる --}}
+                                        <div class="swiper-slide">
+                                            @if($product->imageThird->filename !== null)
+                                            <img src="{{ asset('storage/products/' . $product->imageThird->filename )}}">
+                                            @else
+                                            <img src="">
+                                            @endif
+                                        </div>
+                                    </div>
+                                    <div class="swiper-slide">
+                                        {{-- <img src="{{ asset('storage/products/sample1.jpg') }}" alt=""> --}}
+                                        {{-- 画像は変数でコントローラから渡ってくる --}}
+                                        <div class="swiper-slide">
+                                            @if($product->imageFirst->filename !== null)
+                                                <img src="{{ asset('storage/products/' . $product->imageFourth->filename )}}">
+                                            @else
+                                                <img src="">
+                                            @endif
+                                        </div>
+                                    </div>
+                                </div>
+                                <!-- If we need pagination -->
+                                <div class="swiper-pagination"></div>
+
+                                <!-- If we need navigation buttons -->
+                                <div class="swiper-button-prev"></div>
+                                <div class="swiper-button-next"></div>
+
+                                <!-- If we need scrollbar -->
+                                <div class="swiper-scrollbar"></div>
+                            </div>
 
                         </div>
+
                         {{-- 右側に情報が欲しいので、tailblocksから持ってくる --}}
-                        <div class="md:w-1/2 ml-4">
+                        <div class="md:w-1/2 ml-4 z-100">
                             {{-- 縦方向が窮屈なのでmarginを当てる --}}
                             <h2 class="mb-4 text-sm title-font text-gray-500 tracking-widest">{{ $product->category->name }}</h2>
                             <h1 class="mb-4 text-gray-900 text-3xl title-font font-medium">{{ $product->name }}</h1>
@@ -50,5 +114,7 @@
             </div>
         </div>
     </div>
+
+    @vite(['resources/js/swiper.js'])
 </x-app-layout>
 
