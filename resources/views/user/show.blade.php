@@ -96,13 +96,14 @@
                                     <span class="text-sm text-gray-700">円（税込）</span>
                                 </div>
                                 <div class="flex items-center">
-                                    <span class="mr-3">Size</span>
+                                    <span class="mr-3">数量</span>
                                     <div class="relative">
-                                        <select class="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10">
-                                            <option>SM</option>
-                                            <option>M</option>
-                                            <option>L</option>
-                                            <option>XL</option>
+                                        {{-- 在庫情報を後ほどpost通信でDBに保存する必要がある
+                                            name属性はpost通信で送信するデータの名前を指定する属性 $_POST['name'] という形で値を取り出せる --}}
+                                        <select name="quantity" class="rounded border appearance-none border-gray-300 py-2 focus:outline-none focus:ring-2 focus:ring-indigo-200 focus:border-indigo-500 text-base pl-3 pr-10">
+                                            @for ($i = 1; $i <= $quantity; $i++)
+                                                <option value="{{$i}}">{{$i}}</option>
+                                            @endfor
                                         </select>
                                     </div>
                                 </div>
