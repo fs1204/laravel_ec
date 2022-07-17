@@ -110,11 +110,56 @@
                             </div>
                         </div>
                     </div>
+                    <div class="border-t border-gray-400 my-8"></div>
+                    <div class="mb-4 text-center">この商品を販売しているショップ</div>
+                    <div class="mb-4 text-center">{{ $product->shop->name }}</div>
+                    <div class="mb-4 text-center">
+                        @if($product->shop->filename !== null)
+                            <img class="mx-auto w-40 h-40 rounded-full object-cover" src="{{ asset('storage/shops/' . $product->shop->filename ) }}">
+                                                                    {{-- object-cover で元の比率を保つ --}}
+                        @else
+                            <img src="">
+                        @endif
+                    </div>
+                    <div class="mb-4 text-center">
+                        {{-- カートに入れるのボタンを参考にする --}}
+                        {{-- 後ほど、カートに入れるpost通信をするが、buttonはpost通信に影響させたくないということで、type="button" をつける --}}
+                        <button data-micromodal-trigger="modal-1" href='javascript:;' type="button" class="text-white bg-gray-400 border-0 py-2 px-6 focus:outline-none hover:bg-gray-500 rounded">ショップの詳細を見る</button>
+                        {{-- modal1のモーダルウィンドウを開くためのボタン select.blade.php --}}
+                        {{-- resources/views/componetns/select-image.blade.php  data-micromodal-trigger--}}
+                    </div>
                 </div>
             </div>
         </div>
     </div>
 
-    @vite(['resources/js/swiper.js'])
+    {{-- 1つだけ表示されればいいので、modal-1 のままでOK --}}
+    <div class="modal micromodal-slide" id="modal-1" aria-hidden="true">
+        <div class="modal__overlay" tabindex="-1" data-micromodal-close>
+            <div class="modal__container" role="dialog" aria-modal="true" aria-labelledby="modal-1-title">
+                <header class="modal__header">
+                    {{-- text-xl text-gray-700 を追加 --}}
+                <h2 class="modal__title text-xl text-gray-700" id="modal-1-title">
+                    {{-- Micromodal --}}
+                    {{ $product->shop->name }}
+                </h2>
+                    {{-- 必ずtype="button"をつける --}}
+                <button type="button" class="modal__close" aria-label="Close modal" data-micromodal-close></button>
+                </header>
+                <main class="modal__content" id="modal-1-content">
+                <p>
+                    {{-- Try hitting the <code>tab</code> key and notice how the focus stays within the modal itself. Also, <code>esc</code> to close modal. --}}
+                    {{ $product->shop->information }}
+                </p>
+                </main>
+                <footer class="modal__footer">
+                {{-- <button class="modal__btn modal__btn-primary">Continue</button> --}}
+                {{-- 閉じるボタンだけあればいい --}}
+                <button type="button" class="modal__btn" data-micromodal-close aria-label="Close this dialog window">閉じる</button>
+                    {{-- ボタンには、type="button" を必ずつける --}}
+                </footer>
+            </div>
+        </div>
+    </div>
 </x-app-layout>
 
