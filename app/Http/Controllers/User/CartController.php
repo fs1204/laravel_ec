@@ -81,7 +81,7 @@ class CartController extends Controller
 
         // 全て在庫チェックをして、買える状態にしてから、Stripeに渡す前に、在庫を減らしておく必要がある。
 
-        foreach($products as $product) {
+        foreach ($products as $product) {
             Stock::create([
                 'product_id' => $product->id,
                 'type' => \Constant::PRODUCT_LIST['reduce'],    // Constantはファサード
@@ -91,7 +91,6 @@ class CartController extends Controller
 
         // dd('test'); //マイナスの在庫処理ができているか確認。
 
-
         \Stripe\Stripe::setApiKey(env('STRIPE_SECRET_KEY')); // 秘密鍵
 
         $session = \Stripe\Checkout\Session::create([
@@ -99,10 +98,11 @@ class CartController extends Controller
             'mode' => 'payment',
             // 'success_url' => route('user.items.index'),
             'success_url' => route('user.cart.success'),
-            'cancel_url' => route('user.cart.index'),
+            // 'cancel_url' => route('user.cart.index'),
+            'cancel_url' => route('user.cart.cancel'),
         ]);
 
-        $publicKey = env('STRIPE_PUBLIC_KEY');
+        // $publicKey = env('STRIPE_PUBLIC_KEY');
 
         // return view('user.checkout', compact('session', 'publicKey'));
         return redirect($session->url, 303);
@@ -112,6 +112,18 @@ class CartController extends Controller
     public function success() {
         Cart::where('user_id', Auth::id())->delete();
         return redirect()->route('user.items.index');
+    }
+
+    public function cancel() {
+        $user = User::findOrFail(Auth::id());
+        foreach($user->products as $product) {
+            Stock::create([
+                'product_id' => $product->id,
+                'type' => \Constant::PRODUCT_LIST['add'],
+                'quantity' => $product->pivot->quantity,
+            ]);
+        }
+        return redirect()->route('user.cart.index');
     }
 
 }

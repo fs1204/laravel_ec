@@ -12,7 +12,8 @@
         stripe.redirectToCheckout({ // チェックアウトページに飛ばす
             sessionId: '{{ $session->id }}';    // session->id は \Stripe\Checkout\Session::create で作った id 作った檀家でidも振られている。
         }).then(function (result) { // もしエラーが発生した場合は、.thenでroute('user.cart.index')に飛ばす
-            window.location.href = '{{ route('user.cart.index') }}';    // 指定された URL に移動する
+            // window.location.href = '{{ route('user.cart.index') }}';    // 指定された URL に移動する
+            window.location.href = '{{ route('user.cart.cancel') }}';    // 指定された URL に移動する
         });
     }
 </script>
