@@ -14,6 +14,7 @@
 $app = new Illuminate\Foundation\Application(
     $_ENV['APP_BASE_PATH'] ?? dirname(__DIR__)
 );
+// サービスコンテナと呼ばれる仕組み
 
 /*
 |--------------------------------------------------------------------------

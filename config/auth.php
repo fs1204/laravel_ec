@@ -15,6 +15,7 @@ return [
 
     'defaults' => [
         'guard' => 'web',
+        // 'guard' => 'users',としてもOK
         'passwords' => 'users',
     ],
 
@@ -40,6 +41,18 @@ return [
             'driver' => 'session',
             'provider' => 'users',
         ],
+        'users' => [
+            'driver' => 'session',
+            'provider' => 'users',
+        ],
+        'owners' => [
+            'driver' => 'session',
+            'provider' => 'owners', // ownerモデルから取ってくる
+        ],
+        'admin' => [
+            'driver' => 'session',
+            'provider' => 'admin',
+        ],
     ],
 
     /*
@@ -63,6 +76,14 @@ return [
         'users' => [
             'driver' => 'eloquent',
             'model' => App\Models\User::class,
+        ],
+        'owners' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Owner::class,
+        ],
+        'admin' => [
+            'driver' => 'eloquent',
+            'model' => App\Models\Admin::class,
         ],
 
         // 'users' => [
@@ -88,8 +109,20 @@ return [
 
     'passwords' => [
         'users' => [
-            'provider' => 'users',
+            'provider' => 'users',  //1つ上で設定した名前となる
             'table' => 'password_resets',
+            'expire' => 60, //期限が60日
+            'throttle' => 60, //ログインを何回か失敗したときに制限をかける仕組みとなっていて、1分間はログインできなくなる
+        ],
+        'owners' => [
+            'provider' => 'owner',
+            'table' => 'owner_password_resets', //マイグレーションで生成したテーブル名に変更したらOK
+            'expire' => 60,
+            'throttle' => 60,
+        ],
+        'admin' => [
+            'provider' => 'admin',
+            'table' => 'admin_password_resets',
             'expire' => 60,
             'throttle' => 60,
         ],
