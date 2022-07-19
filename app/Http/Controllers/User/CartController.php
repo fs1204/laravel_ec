@@ -70,7 +70,10 @@ class CartController extends Controller
                 return redirect()->route('user.cart.index');
             } else {
                 $lineItems[] = [
-                    'price' => $product->price,
+                    'name' => $product->name,
+                    'description' => $product->information,
+                    'amount' => $product->price,
+                    'currency' => 'jpy',
                     'quantity' => $product->pivot->quantity,
                 ];
             }
@@ -95,11 +98,12 @@ class CartController extends Controller
             'line_items' => [$lineItems],
             'mode' => 'payment',
             'success_url' => route('user.items.index'),
-            'cancel_url' => route('cart.cart.index'),
+            'cancel_url' => route('user.cart.index'),
         ]);
 
         $publicKey = env('STRIPE_PUBLIC_KEY');
 
-        return view('user.checkout', compact('session', 'publicKey'));
+        // return view('user.checkout', compact('session', 'publicKey'));
+        return redirect($session->url, 303);
     }
 }
