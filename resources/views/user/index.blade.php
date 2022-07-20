@@ -3,9 +3,48 @@
 
 <x-app-layout>
     <x-slot name="header">
-        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
-            ホーム
-        </h2>
+        <div class="flex justify-between items-center">
+            <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+                商品一覧
+            </h2>
+                                    {{-- このページにもどってくればOK action=""でもよい --}}
+            <form method="get" action="{{ route('user.items.index')}}">
+                <div class="flex">
+                    <div><span class="text-sm">表示順</span><br>
+                    <select id="sort" name="sort">
+                        <option value="{{ \Constant::SORT_ORDER['recommend']}}"
+                                {{-- リクエストには、[name属性値 => value属性値] という連想配列の形で、データが保存される。
+                                    $_GET['name'] で valueの値を取り出すことができる
+                                    laravelではリクエストされたデータをRequestを使って取り出せる--}}
+                            @if(\Request::get('sort') === \Constant::SORT_ORDER['recommend'] )
+                                selected
+                            @endif>おすすめ順
+                        </option>
+                        <option value="{{ \Constant::SORT_ORDER['higherPrice']}}"
+                            @if(\Request::get('sort') === \Constant::SORT_ORDER['higherPrice'] )
+                                selected
+                            @endif>料金の高い順
+                        </option>
+                        <option value="{{ \Constant::SORT_ORDER['lowerPrice']}}"
+                            @if(\Request::get('sort') === \Constant::SORT_ORDER['lowerPrice'] )
+                                selected
+                            @endif>料金の低い順
+                        </option>
+                        <option value="{{ \Constant::SORT_ORDER['later']}}"
+                            @if(\Request::get('sort') === \Constant::SORT_ORDER['later'] )
+                                selected
+                            @endif>新しい順
+                        </option>
+                        <option value="{{ \Constant::SORT_ORDER['older']}}"
+                            @if(\Request::get('sort') === \Constant::SORT_ORDER['older'] )
+                                selected
+                            @endif>古い順
+                        </option>
+                    </select>
+                    </div>
+                </div>
+            </form>
+        </div>
     </x-slot>
 
     <div class="py-12">
@@ -38,5 +77,13 @@
             </div>
         </div>
     </div>
+
+    <script>
+        const select = document.getElementById('sort');
+        select.addEventListener('change', function() {
+                            // 中身が変わったら、、、 select box の中身が変わったら、、、
+            this.form.submit()  // get通信をする
+        })
+    </script>
 </x-app-layout>
 

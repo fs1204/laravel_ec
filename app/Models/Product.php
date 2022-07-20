@@ -79,5 +79,24 @@ class Product extends Model
         ->where('products.is_selling', true)
         ->select('products.id', 'products.name', 'products.price', 'products.sort_order', 'products.information', 'secondary_categories.name as category', 'image1.filename as filename');
     }
+
+    public function scopeSortOrder($query, $sortOrder){
+        if($sortOrder === null || $sortOrder === \Constant::SORT_ORDER['recommend']){
+            return $query->orderBy('sort_order', 'asc');
+                                    // shopが自由に数字を当てることができる 小さい順に並べる
+        }
+        if($sortOrder === \Constant::SORT_ORDER['higherPrice']){
+            return $query->orderBy('price', 'desc');    // 価格の高い順
+        }
+        if($sortOrder === \Constant::SORT_ORDER['lowerPrice']){
+            return $query->orderBy('price', 'asc');     // 価格の低い順
+        }
+        if($sortOrder === \Constant::SORT_ORDER['later']){
+            return $query->orderBy('products.created_at', 'desc');  // 新しい順
+        }
+        if($sortOrder === \Constant::SORT_ORDER['older']){
+            return $query->orderBy('products.created_at', 'asc');   // 古い順
+        }
+    }
 }
 
