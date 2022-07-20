@@ -32,7 +32,9 @@ class ItemController extends Controller
         // $products = Product::availableItems()->get();
         $products = Product::availableItems()
         ->sortOrder($request->sort) // リクエストのsortの値次第で並び替えられる。
-        ->get();
+        // ->get();
+        // ->paginate($request->pagination);   // 20か50か100 という数字が入ってくる。
+        ->paginate($request->pagination ?? 20);   // デフォルトは15なので、20に指定する 最初に画面に表示されるときは先頭の20の項目が表示される
 
         return view('user.index', compact('products'));
     }

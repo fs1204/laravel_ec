@@ -10,37 +10,24 @@
                                     {{-- このページにもどってくればOK action=""でもよい --}}
             <form method="get" action="{{ route('user.items.index')}}">
                 <div class="flex">
-                    <div><span class="text-sm">表示順</span><br>
-                    <select id="sort" name="sort">
-                        <option value="{{ \Constant::SORT_ORDER['recommend']}}"
-                                {{-- リクエストには、[name属性値 => value属性値] という連想配列の形で、データが保存される。
-                                    $_GET['name'] で valueの値を取り出すことができる
-                                    laravelではリクエストされたデータをRequestを使って取り出せる--}}
-                            @if(\Request::get('sort') === \Constant::SORT_ORDER['recommend'] )
-                                selected
-                            @endif>おすすめ順
-                        </option>
-                        <option value="{{ \Constant::SORT_ORDER['higherPrice']}}"
-                            @if(\Request::get('sort') === \Constant::SORT_ORDER['higherPrice'] )
-                                selected
-                            @endif>料金の高い順
-                        </option>
-                        <option value="{{ \Constant::SORT_ORDER['lowerPrice']}}"
-                            @if(\Request::get('sort') === \Constant::SORT_ORDER['lowerPrice'] )
-                                selected
-                            @endif>料金の低い順
-                        </option>
-                        <option value="{{ \Constant::SORT_ORDER['later']}}"
-                            @if(\Request::get('sort') === \Constant::SORT_ORDER['later'] )
-                                selected
-                            @endif>新しい順
-                        </option>
-                        <option value="{{ \Constant::SORT_ORDER['older']}}"
-                            @if(\Request::get('sort') === \Constant::SORT_ORDER['older'] )
-                                selected
-                            @endif>古い順
-                        </option>
-                    </select>
+                    <div>
+                        <span class="text-sm">表示順</span><br>
+                        <select id="sort" name="sort">
+                            <option value="{{ \Constant::SORT_ORDER['recommend']}}" @if(\Request::get('sort') === \Constant::SORT_ORDER['recommend'] ) selected @endif>おすすめ順
+                            </option>
+                            <option value="{{ \Constant::SORT_ORDER['higherPrice']}}" @if(\Request::get('sort') === \Constant::SORT_ORDER['higherPrice'] ) selected @endif>料金の高い順 </option>
+                            <option value="{{ \Constant::SORT_ORDER['lowerPrice']}}" @if(\Request::get('sort') === \Constant::SORT_ORDER['lowerPrice'] ) selected @endif>料金の低い順</option>
+                            <option value="{{ \Constant::SORT_ORDER['later']}}" @if(\Request::get('sort') === \Constant::SORT_ORDER['later'] ) selected @endif>新しい順</option>
+                            <option value="{{ \Constant::SORT_ORDER['older']}}" @if(\Request::get('sort') === \Constant::SORT_ORDER['older'] ) selected @endif>古い順</option>
+                        </select>
+                    </div>
+                    <div>
+                        <span class="text-sm">表示件数</span><br>
+                        <select id="pagination" name="pagination">
+                            <option value="20" @if(\Request::get('pagination') === '20') selected @endif>20件</option>
+                            <option value="50" @if(\Request::get('pagination') === '50') selected @endif>50件</option>
+                            <option value="100" @if(\Request::get('pagination') === '100') selected @endif>100件</option>
+                        </select>
                     </div>
                 </div>
             </form>
@@ -73,6 +60,12 @@
                             </div>
                         @endforeach
                     </div>
+                    {{
+                        $products->appends([
+                            'sort' => \Request::get('sort'),
+                            'pagination' => \Request::get('pagination'),
+                        ])->links()
+                    }}
                 </div>
             </div>
         </div>
@@ -84,6 +77,11 @@
                             // 中身が変わったら、、、 select box の中身が変わったら、、、
             this.form.submit()  // get通信をする
         })
+
+        const paginate = document.getElementById('pagination');
+        paginate.addEventListener('change', function(){
+            this.form.submit()
+        });
     </script>
 </x-app-layout>
 
