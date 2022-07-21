@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Models\PrimaryCategory;
 use App\Models\Product;
 use App\Models\Stock;
 use Illuminate\Http\Request;
@@ -26,17 +27,17 @@ class ItemController extends Controller
         });
     }
 
-    // view側で設定した値をコントローラ側で受け取る必要がある。
     public function index(Request $request)
     {
-        // $products = Product::availableItems()->get();
-        $products = Product::availableItems()
-        ->sortOrder($request->sort) // リクエストのsortの値次第で並び替えられる。
-        // ->get();
-        // ->paginate($request->pagination);   // 20か50か100 という数字が入ってくる。
-        ->paginate($request->pagination ?? 20);   // デフォルトは15なので、20に指定する 最初に画面に表示されるときは先頭の20の項目が表示される
 
-        return view('user.index', compact('products'));
+        $categories = PrimaryCategory::with('secondary')->get();
+
+        $products = Product::availableItems()
+        ->selectCategory($request->category ?? '0')
+        ->sortOrder($request->sort)
+        ->paginate($request->pagination ?? 20);
+
+        return view('user.index', compact('products', 'categories'));
     }
 
     public function show($id)
