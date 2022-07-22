@@ -107,5 +107,21 @@ class Product extends Model
             return;
         }
     }
+
+    public function scopeSearchKeyword($query, $keyword)
+    {
+        if(!is_null($keyword)) {
+            $spaceConvert = mb_convert_kana($keyword,'s');
+
+            $keywords = preg_split('/[\s]+/', $spaceConvert, -1, PREG_SPLIT_NO_EMPTY);
+
+            foreach($keywords as $word){
+                $query->where('products.name','like','%'.$word.'%');   // 部分一致
+                return $query;
+            }
+        } else {
+            return ;
+        }
+    }
 }
 
