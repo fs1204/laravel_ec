@@ -3,6 +3,7 @@
 namespace App\Jobs;
 
 use App\Mail\TestMail;
+use App\Mail\ThanksMail;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldBeUnique;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -20,9 +21,10 @@ class SendThankMail implements ShouldQueue
      *
      * @return void
      */
-    public function __construct()
+    public function __construct(public $products, public $user)
     {
-        //
+        $this->products = $products;
+        $this->user = $user;
     }
 
     /**
@@ -32,6 +34,8 @@ class SendThankMail implements ShouldQueue
      */
     public function handle()
     {
-        Mail::to('test@example.com')->send(new TestMail());
+        // Mail::to('test@example.com')->send(new TestMail());
+        Mail::to($this->user) // userの中でemailのプロパティを自動で探してくれる
+            ->send(new ThanksMail($this->products, $this->user)); // Mailableクラスのインスタンスに渡す。
     }
 }
