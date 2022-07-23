@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Cart;
 use App\Models\Stock;
 use App\Models\User;
+use App\Service\CartService;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -55,8 +56,14 @@ class CartController extends Controller
         return redirect()->route('user.cart.index');
     }
 
-    public function checkout()
+    public function checkout() // 決済
     {
+        //
+        $items = Cart::where('user_id', Auth::id())->get(); // 認証済みのユーザーのカートに入っているレコードを取得
+        $products = CartService::getItemsInCart($items);
+        //
+
+
         $user = User::findOrFail(Auth::id());
         $products = $user->products;
 
