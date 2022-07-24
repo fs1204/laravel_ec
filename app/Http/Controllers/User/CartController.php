@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\User;
 
 use App\Http\Controllers\Controller;
+use App\Jobs\SendOrderedMail;
 use App\Jobs\SendThankMail;
 use App\Models\Cart;
 use App\Models\Stock;
@@ -59,16 +60,6 @@ class CartController extends Controller
 
     public function checkout() // 決済
     {
-        //
-        $items = Cart::where('user_id', Auth::id())->get(); // 認証済みのユーザーのカートに入っているレコードを取得
-        $products = CartService::getItemsInCart($items);
-        $user = User::findOrFail(Auth::id());
-
-        SendThankMail::dispatch($products, $user);
-        dd('ユーザーメール送信テスト');
-        //
-
-
         $user = User::findOrFail(Auth::id());
         $products = $user->products;
 
@@ -122,8 +113,21 @@ class CartController extends Controller
 
 
     public function success() {
-        Cart::where('user_id', Auth::id())->delete();
-        return redirect()->route('user.items.index');
+        ////
+        $items = Cart::where('user_id', Auth::id())->get(); // 認証済みのユーザーのカートに入っているレコードを取得
+        $products = CartService::getItemsInCart($items);
+        $user = User::findOrFail(Auth::id());
+
+        SendThankMail::dispatch($products, $user);
+        foreach($products as $product) {
+            SendOrderedMail::dispatch($product, $user);
+        }
+
+        // dd('ユーザーメール送信');
+        ////
+
+        Cart::where('user_id', Auth::id())->delete();   // カート情報を削除
+        return redirect()->route('user.items.index');   // リダイレクトをかける
     }
 
     public function cancel() {
